@@ -68,11 +68,15 @@ let postMessage = (req, res) => {
   let message = req.body.input || {};
   let context = req.body.context || {};
   getConversationResponse(message, context).then(data => {
-    return res.json(data);
-  }).catch(err => {
-    return res.status(err.code || 500).json(err);
-  });
-}
+return new Promise((resolved, rejected) => {
+    // Send the input to the conversation service
+    conversation.message(payload, function(err, data) {
+      if (err) {
+        rejected(err);
+      }
+      resolved(postProcess(data));
+    });
+  })
 
 /** 
 * 사용자의 메세지를 Watson Conversation 서비스에 전달하기 전에 처리할 코드
