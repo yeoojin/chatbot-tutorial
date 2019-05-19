@@ -33,36 +33,15 @@ let getConversationResponse = (message, context) => {
 
   payload = preProcess(payload);
 
-  return new Promise((resolved, rejected) => {
+return new Promise((resolved, rejected) => {
     // Send the input to the conversation service
     conversation.message(payload, function(err, data) {
       if (err) {
         rejected(err);
       }
-      else{
-        let processed = postProcess(data);
-        if(processed){
-          // return 값이 Promise 일 경우
-          if(typeof processed.then === 'function'){
-            processed.then(data => {
-              resolved(data);
-            }).catch(err => {
-              rejected(err);
-            })
-          }
-          // return 값이 변경된 data일 경우
-          else{
-            resolved(processed);
-          }
-        }
-        else{
-          // return 값이 없을 경우
-          resolved(data);
-        }
-      }
+      resolved(postProcess(data));
     });
   })
-}
 
 let postMessage = (req, res) => {
   let message = req.body.input || {};
